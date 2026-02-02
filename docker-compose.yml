@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  redis:
+    image: redis:7-alpine
+
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      FLASK_ENV: production
+      SECRET_KEY: "change-me"
+      MESSAGE_QUEUE: "redis://redis:6379/0"
+      CHANNELS_FILE: "/data/channels.json"
+      AVATARS_FILE: "/data/avatars.json"
+      UPLOAD_FOLDER: "/data/uploads"
+    depends_on:
+      - redis
+    volumes:
+      - ./data:/data
+      - ./static/uploads:/app/static/uploads
+    restart: unless-stopped
