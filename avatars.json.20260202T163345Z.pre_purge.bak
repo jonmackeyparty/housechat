@@ -1,0 +1,44 @@
+{
+  "smoke_user": {
+    "initials": "S",
+    "bg": "#8b5cf6",
+    "fg": "#ffffff",
+    "url": "/static/avatars/e1b0f233af845b68.svg"
+  },
+  "Bigger J": {
+    "initials": "BJ",
+    "bg": "#ec4899",
+    "fg": "#ffffff",
+    "url": "/static/avatars/4a570a2a51f9bb55.svg"
+  },
+  "Big J": {
+    "initials": "BJ",
+    "bg": "#8b5cf6",
+    "fg": "#ffffff",
+    "url": "/static/avatars/962a6fa267d7ab6c.svg"
+  },
+  "guy": {
+    "initials": "G",
+    "bg": "#5865f2",
+    "fg": "#ffffff",
+    "url": "/static/avatars/3379feb6ae9fed3b.svg"
+  },
+  "juanito": {
+    "initials": "J",
+    "bg": "#f59e0b",
+    "fg": "#000000",
+    "url": "/static/avatars/46b2150accc75b4a.svg"
+  },
+  "jeevacay": {
+    "initials": "J",
+    "bg": "#5865f2",
+    "fg": "#ffffff",
+    "url": "/static/avatars/3fd87a42d989b329.svg"
+  },
+  "big j": {
+    "initials": "BJ",
+    "bg": "#8b5cf6",
+    "fg": "#ffffff",
+    "url": "/static/avatars/e36cf0748ea73c30.svg"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "fallecito": {
+    "initials": "F",
+    "bg": "#8b5cf6",
+    "fg": "#ffffff"
+  },
+  "juanito": {
+    "initials": "J",
+    "bg": "#f97316",
+    "fg": "#ffffff"
+  },
+  "Big J": {
+    "initials": "BJ",
+    "bg": "#5865f2",
+    "fg": "#ffffff",
+    "url": "/static/avatars/962a6fa267d7ab6c.svg"
+  }
+}

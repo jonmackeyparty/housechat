@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mein Chat - {{ channel }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="app">
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo"><img src="{{ url_for('static', filename='branding/mein_chat_logo.svg') }}" alt="Mein Chat" class="app-logo"></div>
+            <div class="app-name">Mein Chat</div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="section-title">Channels</div>
+            <input class="channel-search" type="search" placeholder="Search channels...">
+            <ul class="channels-list">
+                {% for ch in channels_list %}
+                    <li class="channel-item {% if ch == channel %}active{% endif %}"><a href="{{ url_for('channel_view', channel=ch) }}">{{ ch }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="section-title">Create Channel</div>
+            <form class="create-channel-form" method="post" action="{{ url_for('create_channel') }}">
+                <input type="text" name="name" placeholder="Channel name" required>
+                <button type="submit">Create</button>
+            </form>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="section-title">Active Users</div>
+            <ul id="active-users-list" class="users-list">
+                {% for user in active_users %}
+                    <li class="user-item">{{ user }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">Logged in as <strong>{{ username }}</strong> | <a href="{{ url_for('logout') }}">Logout</a></div>
+    </div>
+    <div class="main">
+        <div class="main-content">
+            <div class="channel-header">
+                <div class="channel-title">{{ channel }}</div>
+            </div>
+            <div class="messages-wrap">
+                <ul class="messages">
+                    {% for msg in messages %}
+                        <li id="msg-{{ loop.index0 }}" class="message {% if msg.user == username %}me{% endif %}" data-msg-idx="{{ loop.index0 }}">
+                            {% if msg.avatar and msg.avatar.url %}
+                                <div class="avatar"><img src="{{ msg.avatar.url }}" alt="{{ msg.user }}"></div>
+                            {% elif msg.avatar %}
+                                <div class="avatar" style="background: {{ msg.avatar.bg }}; color: {{ msg.avatar.fg }}">{{ msg.avatar.initials }}</div>
+                            {% else %}
+                                <div class="avatar">{{ msg.user[0]|upper }}</div>
+                            {% endif %}
+                            <div class="message-body">
+                                <div class="message-header">
+                                    <div class="message-user">{{ msg.user }}</div>
+                                    {% if msg.timestamp %}
+                                        <div class="timestamp">{{ msg.timestamp }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="message-text">{{ msg.message | render_message }}</div>
+                                <div style="margin-top:8px;">
+                                    <form method="post" action="{{ url_for('add_reaction', channel=channel, msg_idx=loop.index0) }}" style="display:inline;">
+                                        {% for emoji in ['👍', '😂', '🎉', '😮', '💩'] %}
+                                            <button type="submit" name="reaction" value="{{ emoji }}" class="emoji-btn">{{ emoji }}</button>
+                                        {% endfor %}
+                                    </form>
+                                </div>
+                                {% if msg.reactions %}
+                                    <div style="margin: 6px 0;">
+                                        {% for reaction in msg.reactions %}
+                                            <span class="emoji-btn" style="background:#ffe4c4; border:none; cursor:default;">{{ reaction }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <form method="post" action="{{ url_for('add_reply', channel=channel, msg_idx=loop.index0) }}" style="margin-top:5px;">
+                                    <input type="text" name="reply_message" placeholder="Reply" required>
+                                    <button type="submit">Reply</button>
+                                </form>
+                                {% if msg.replies %}
+                                    <div class="replies" data-count="{{ msg.replies|length }}">
+                                        {% set preview_replies = msg.replies[:2] %}
+                                        {% set earlier_replies = msg.replies[2:] %}
+                                        <div class="replies-preview">
+                                                {% for reply in preview_replies %}
+                                                    <div class="reply-item">
+                                                    {% if reply.avatar %}
+                                                        {% if reply.avatar.url %}
+                                                            <div class="reply-avatar"><img src="{{ reply.avatar.url }}" alt="{{ reply.user }}"></div>
+                                                        {% else %}
+                                                            <div class="reply-avatar" style="background: {{ reply.avatar.bg }}; color: {{ reply.avatar.fg }}">{{ reply.avatar.initials }}</div>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <div class="reply-avatar">{{ reply.user[0]|upper }}</div>
+                                                    {% endif %}
+                                                    <div class="reply-content">
+                                                        <div class="reply-meta"><strong>{{ reply.user }}</strong>{% if reply.timestamp %} <span class="reply-ts">{{ reply.timestamp }}</span>{% endif %}</div>
+                                                        <div class="reply-text">{{ reply.message | render_message }}</div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                            {% if earlier_replies %}
+                                                <div class="replies-full" style="display:none;">
+                                                    {% for reply in earlier_replies %}
+                                                        <div class="reply-item">
+                                                            {% if reply.avatar %}
+                                                                {% if reply.avatar.url %}
+                                                                    <div class="reply-avatar"><img src="{{ reply.avatar.url }}" alt="{{ reply.user }}"></div>
+                                                                {% else %}
+                                                                    <div class="reply-avatar" style="background: {{ reply.avatar.bg }}; color: {{ reply.avatar.fg }}">{{ reply.avatar.initials }}</div>
+                                                                {% endif %}
+                                                            {% else %}
+                                                                <div class="reply-avatar">{{ reply.user[0]|upper }}</div>
+                                                            {% endif %}
+                                                            <div class="reply-content">
+                                                                <div class="reply-meta"><strong>{{ reply.user }}</strong>{% if reply.timestamp %} <span class="reply-ts">{{ reply.timestamp }}</span>{% endif %}</div>
+                                                                <div class="reply-text">{{ reply.message | render_message }}</div>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                            {% if msg.replies|length > 2 %}
+                                                <button class="replies-toggle">View {{ msg.replies|length }} replies</button>
+                                            {% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <h2>Post Message</h2>
+            <div id="drop-zone" style="border:2px dashed #e1e3e6; padding:12px; border-radius:6px; margin-bottom:10px; background:#fff;">
+                Drag & drop images here or <label style="color:#5865f2; text-decoration:underline; cursor:pointer;"><input id="file-input" type="file" accept="image/*" style="display:none;"> select</label>
+                <div id="drop-hint" style="font-size:0.9em; color:#6b7785; margin-top:6px;">Files will be uploaded and posted to the channel.</div>
+            </div>
+            <form class="composer" method="post" action="{{ url_for('channel_view', channel=channel) }}">
+                <input id="message-input" type="text" name="message" placeholder="Message" required>
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+    </div>
+    </div>
+    <script>
+        window.MC_CONFIG = { channel: "{{ channel }}", username: "{{ username }}" };
+    </script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

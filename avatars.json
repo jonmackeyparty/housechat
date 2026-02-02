@@ -1,0 +1,68 @@
+{
+  "Jon": {
+    "initials": "J",
+    "bg": "#f04747",
+    "fg": "#ffffff",
+    "url": "/static/avatars/5f39b51ae9a4dacb.svg"
+  },
+  "anonymous": {
+    "initials": "A",
+    "bg": "#ec4899",
+    "fg": "#ffffff",
+    "url": "/static/avatars/2f183a4e64493af3.svg"
+  },
+  "Jon@work": {
+    "initials": "J",
+    "bg": "#ec4899",
+    "fg": "#ffffff",
+    "url": "/static/avatars/28ea074a25a604ca.svg"
+  },
+  "juanito": {
+    "initials": "J",
+    "bg": "#f97316",
+    "fg": "#ffffff",
+    "url": "/static/avatars/46b2150accc75b4a.svg"
+  },
+  "vanzi": {
+    "initials": "V",
+    "bg": "#5865f2",
+    "fg": "#ffffff",
+    "url": "/static/avatars/eebb88ac0744df2a.svg"
+  },
+  "vanzimir": {
+    "initials": "V",
+    "bg": "#8b5cf6",
+    "fg": "#ffffff",
+    "url": "/static/avatars/93740c8344f0049a.svg"
+  },
+  "vaneeza": {
+    "initials": "V",
+    "bg": "#8b5cf6",
+    "fg": "#ffffff",
+    "url": "/static/avatars/df396bbf5e7e6370.svg"
+  },
+  "pei pei ": {
+    "initials": "PP",
+    "bg": "#10b981",
+    "fg": "#ffffff",
+    "url": "/static/avatars/0983bc38649052fa.svg"
+  },
+  "Big J": {
+    "initials": "BJ",
+    "bg": "#f59e0b",
+    "fg": "#000000",
+    "url": "/static/avatars/962a6fa267d7ab6c.svg"
+  },
+  "Dan ": {
+    "initials": "D",
+    "bg": "#5865f2",
+    "fg": "#ffffff",
+    "url": "/static/avatars/10633534c92a7854.svg"
+  },
+  "AltJon": {
+    "initials": "A",
+    "bg": "#06b6d4",
+    "fg": "#ffffff",
+    "url": "/static/avatars/a00701470fafa5f3.svg"
+  }
+}
