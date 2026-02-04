@@ -65,20 +65,13 @@
                                     {% endif %}
                                 </div>
                                 <div class="message-text">{{ msg.message | render_message }}</div>
-                                <div style="margin-top:8px;">
-                                    <form method="post" action="{{ url_for('add_reaction', channel=channel, msg_idx=loop.index0) }}" style="display:inline;">
-                                        {% for emoji in ['👍', '😂', '🎉', '😮', '💩'] %}
-                                            <button type="submit" name="reaction" value="{{ emoji }}" class="emoji-btn">{{ emoji }}</button>
-                                        {% endfor %}
-                                    </form>
-                                </div>
-                                {% if msg.reactions %}
-                                    <div style="margin: 6px 0;">
-                                        {% for reaction in msg.reactions %}
-                                            <span class="emoji-btn" style="background:#ffe4c4; border:none; cursor:default;">{{ reaction }}</span>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
+                                {# Reactions: render a single fixed row of default emojis with counts #}
+                                <form method="post" action="{{ url_for('add_reaction', channel=channel, msg_idx=loop.index0) }}" class="reactions" style="margin:6px 0;display:flex;align-items:center;border:none;background:transparent;padding:0;">
+                                    {% for emoji in ['👍', '😂', '🎉', '😮', '💩'] %}
+                                        {% set cnt = (msg.reactions|default([])|select('equalto', emoji)|list|length) %}
+                                        <button type="submit" name="reaction" value="{{ emoji }}" class="emoji-btn" style="margin-right:8px;">{{ emoji }} <span class="reaction-count">{{ cnt }}</span></button>
+                                    {% endfor %}
+                                </form>
                                 <form method="post" action="{{ url_for('add_reply', channel=channel, msg_idx=loop.index0) }}" style="margin-top:5px;">
                                     <input type="text" name="reply_message" placeholder="Reply" required>
                                     <button type="submit">Reply</button>
