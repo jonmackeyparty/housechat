@@ -375,7 +375,6 @@
         if (!ul) return;
         var selector = '[data-msg-idx="' + data.msg_idx + '"]';
         var li = ul.querySelector(selector) || document.getElementById('msg-' + data.msg_idx);
-        try { console.debug && console.debug('update_message', data.msg_idx, 'found li?', !!li, 'replies?', data.message && data.message.replies && data.message.replies.length); } catch (e) {}
         if (li) {
             var newReactions = renderReactions(data.message);
             var oldReactions = li.querySelector('.reactions');
