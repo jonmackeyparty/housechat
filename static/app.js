@@ -323,13 +323,8 @@
                 avatarHtml = '<div class="avatar" style="background:' + bg + '; color:' + fg + ';">' + initials + '</div>';
             }
         }
-        li.innerHTML = avatarHtml + '<div class="message-body">' +
-            '<div class="message-header"><div class="message-user">' + escapeHtml(data.message.user) + '</div>' + (data.message.timestamp?(' <div class="timestamp">'+escapeHtml(data.message.timestamp)+'</div>'):'') +'</div>' +
-            '<div class="message-text">' + (data.message.rendered || escapeHtml(data.message.message)) + '</div>' +
-            '<div style="margin-top:8px;"><form method="post" action="/channel/' + encodeURIComponent(data.channel) + '/react/' + data.msg_idx + '" style="display:inline;">' + ['👍', '😂', '🎉', '😮', '💩'].map(function(emoji){ return '<button type="submit" name="reaction" value="' + emoji + '" class="emoji-btn">' + emoji + '</button>'; }).join('') + '</form></div>' +
-            '</div>';
-        // render media links using existing renderer and insert
-        li.querySelector('.message-text').innerHTML = renderMessageLi(data.channel, data.msg_idx, data.message).replace(/^.*?<div class="message-text">/,'').replace(/<\/div>$/,'');
+        // Build full message body (including message text, reactions form, reply form and replies)
+        li.innerHTML = avatarHtml + '<div class="message-body">' + renderMessageLi(data.channel, data.msg_idx, data.message) + '</div>';
         ul.appendChild(li);
         // if the new message is from current user, smoothly scroll to it
         if (data.message.user === window.MC_CONFIG.username) {
@@ -346,7 +341,7 @@
         var selector = '[data-msg-idx="' + data.msg_idx + '"]';
         var li = ul.querySelector(selector) || document.getElementById('msg-' + data.msg_idx);
         if (li) {
-            var newReactions = renderReactions(data.message);
+            var newReactions = renderReactions(data.channel, data.msg_idx, data.message);
             var oldReactions = li.querySelector('.reactions');
             if (oldReactions) {
                 oldReactions.outerHTML = newReactions || '';
