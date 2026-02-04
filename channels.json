@@ -4,9 +4,7 @@
       "user": "Big J",
       "message": "Hello, chatting here",
       "timestamp": "2026-02-02 17:52:56",
-      "reactions": [
-        "\ud83d\udc4d"
-      ],
+      "reactions": [],
       "replies": [
         {
           "user": "anonymous",
@@ -22,6 +20,11 @@
           "user": "Big J",
           "message": "am i chatting?",
           "timestamp": "2026-02-04 17:23:33"
+        },
+        {
+          "user": "Big J",
+          "message": "still chat?",
+          "timestamp": "2026-02-04 17:31:23"
         }
       ]
     }
@@ -32,7 +35,8 @@
     {
       "user": "Big J",
       "message": "replies are broken",
-      "timestamp": "2026-02-03 23:09:41"
+      "timestamp": "2026-02-03 23:09:41",
+      "reactions": []
     }
   ],
   "#music-notes": [
@@ -47,9 +51,7 @@
           "timestamp": "2026-02-02 18:04:26"
         }
       ],
-      "reactions": [
-        "\ud83c\udf89"
-      ]
+      "reactions": []
     }
   ],
   "#book-club": [],
@@ -58,10 +60,7 @@
       "user": "Big J",
       "message": "we got the fuel tank installed",
       "timestamp": "2026-02-03 19:11:29",
-      "reactions": [
-        "\ud83c\udf89",
-        "\ud83c\udf89"
-      ]
+      "reactions": []
     },
     {
       "user": "Vaneeza",
