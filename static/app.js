@@ -12,19 +12,18 @@
         try { window.scrollTo(0, 0); } catch (e) {}
     }
 
-    function renderReactions(msg) {
-        if (!msg.reactions || msg.reactions.length === 0) return '';
-        // aggregate counts per emoji
+    function renderReactions(channel, idx, msg) {
+        // Always render a single row of default emojis with their counts (0 if none)
+        var defaults = ['👍', '😂', '🎉', '😮', '💩'];
         var counts = {};
-        msg.reactions.forEach(function(r){ counts[r] = (counts[r]||0) + 1; });
-        var parts = [];
-        for (var emoji in counts) {
-            if (!Object.prototype.hasOwnProperty.call(counts, emoji)) continue;
-            var c = counts[emoji];
-            parts.push('<button type="button" class="reaction-chip" data-emoji="' + escapeHtml(emoji) + '" style="background:#fff3e0;border:1px solid #ffd7a8;border-radius:12px;padding:2px 6px;margin-right:6px;cursor:default;">' +
-                '<span class="reaction-emoji">' + escapeHtml(emoji) + '</span> <span class="reaction-count">' + c + '</span></button>');
-        }
-        return '<div class="reactions" style="margin:6px 0;">' + parts.join('') + '</div>';
+        (msg.reactions || []).forEach(function(r){ counts[r] = (counts[r]||0) + 1; });
+        var parts = defaults.map(function(emoji){
+            var c = counts[emoji] || 0;
+            return '<button type="submit" name="reaction" value="' + escapeHtml(emoji) + '" class="emoji-btn" style="margin-right:8px;">' +
+                '<span class="reaction-emoji">' + escapeHtml(emoji) + '</span> <span class="reaction-count">' + c + '</span>' +
+                '</button>';
+        });
+        return '<form method="post" action="/channel/' + encodeURIComponent(channel) + '/react/' + idx + '" class="reactions" style="margin:6px 0;display:flex;align-items:center;border:none;background:transparent;padding:0;">' + parts.join('') + '</form>';
     }
 
     function renderReplies(msg) {
@@ -142,35 +141,13 @@
         try {
             var t = ev.target;
             if (!t) return;
-            // button inside a reaction form (server endpoint contains /react/)
+            // normalize when inner spans are clicked
+            if (t.closest) t = t.closest('button.emoji-btn') || t;
             if (t.matches && t.matches('button.emoji-btn') && t.form && t.form.action && t.form.action.indexOf('/react/') !== -1) {
-                var val = t.value || t.getAttribute('value') || '';
-                // find nearest message container
-                var li = t.closest('.message');
-                if (!li) return;
-                var reactions = li.querySelector('.reactions');
-                if (reactions) {
-                    var chip = reactions.querySelector('.reaction-chip[data-emoji="' + val.replace(/"/g,'\"') + '"]');
-                    if (chip) {
-                        var cnt = chip.querySelector('.reaction-count');
-                        if (cnt) {
-                            try { cnt.textContent = String(Number(cnt.textContent||'0') + 1); } catch (e) {}
-                        }
-                    } else {
-                        // create a new chip
-                        var btn = document.createElement('button');
-                        btn.type = 'button';
-                        btn.className = 'reaction-chip';
-                        btn.setAttribute('data-emoji', val);
-                        btn.style.background = '#fff3e0';
-                        btn.style.border = '1px solid #ffd7a8';
-                        btn.style.borderRadius = '12px';
-                        btn.style.padding = '2px 6px';
-                        btn.style.marginRight = '6px';
-                        btn.style.cursor = 'default';
-                        btn.innerHTML = '<span class="reaction-emoji">' + escapeHtml(val) + '</span> <span class="reaction-count">1</span>';
-                        reactions.appendChild(btn);
-                    }
+                // optimistic increment of the counter next to the clicked emoji button
+                var cnt = t.querySelector('.reaction-count');
+                if (cnt) {
+                    try { cnt.textContent = String(Number(cnt.textContent||'0') + 1); } catch (e) {}
                 }
             }
         } catch (err) {}
@@ -309,14 +286,7 @@
 
         // wrap in message-text container
         var html = '<div class="message-text">' + escapedText + mediaPart + '</div>' +
-            '<div style="margin-top:8px;">' +
-            '<form method="post" action="/channel/' + encodeURIComponent(channel) + '/react/' + idx + '" style="display:inline;">' +
-                ['👍', '😂', '🎉', '😮', '💩'].map(function(emoji){
-                    return '<button type="submit" name="reaction" value="' + emoji + '" class="emoji-btn">' + emoji + '</button>';
-                }).join('') +
-            '</form>' +
-            '</div>' +
-            renderReactions(msg) +
+            renderReactions(channel, idx, msg) +
             '<form method="post" action="/channel/' + encodeURIComponent(channel) + '/reply/' + idx + '" style="margin-top:5px;">' +
                 '<input type="text" name="reply_message" placeholder="Reply" required>' +
                 '<button type="submit">Reply</button>' +
