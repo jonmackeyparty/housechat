@@ -4,7 +4,14 @@
       "user": "Big J",
       "message": "Hello, chatting here",
       "timestamp": "2026-02-02 17:52:56",
-      "reactions": [],
+      "reactions": [
+        "\ud83d\udca9",
+        "\ud83d\udca9",
+        "\ud83d\udca9",
+        "\ud83d\udca9",
+        "\ud83d\udca9",
+        "\ud83d\ude02"
+      ],
       "replies": [
         {
           "user": "anonymous",
@@ -36,7 +43,16 @@
       "user": "Big J",
       "message": "replies are broken",
       "timestamp": "2026-02-03 23:09:41",
-      "reactions": []
+      "reactions": [
+        "\ud83d\udc4d"
+      ],
+      "replies": [
+        {
+          "user": "Big J",
+          "message": "not anymore",
+          "timestamp": "2026-02-04 19:11:22"
+        }
+      ]
     }
   ],
   "#music-notes": [
@@ -49,23 +65,47 @@
           "user": "Big J",
           "message": "Scott Walker IV",
           "timestamp": "2026-02-02 18:04:26"
+        },
+        {
+          "user": "Big J",
+          "message": "wow",
+          "timestamp": "2026-02-04 18:24:20"
         }
       ],
       "reactions": []
     }
   ],
   "#book-club": [],
-  "mein haus 2.0": [
+  "#mein haus 2.0": [
     {
       "user": "Big J",
       "message": "we got the fuel tank installed",
       "timestamp": "2026-02-03 19:11:29",
-      "reactions": []
+      "reactions": [],
+      "replies": [
+        {
+          "user": "Big J",
+          "message": "yes we did",
+          "timestamp": "2026-02-04 20:17:00"
+        },
+        {
+          "user": "Vaneeza",
+          "message": "it works",
+          "timestamp": "2026-02-04 20:38:40"
+        }
+      ]
     },
     {
       "user": "Vaneeza",
       "message": "i can't reply to your message ",
-      "timestamp": "2026-02-03 19:54:03"
+      "timestamp": "2026-02-03 19:54:03",
+      "replies": [
+        {
+          "user": "Big J",
+          "message": "now you can",
+          "timestamp": "2026-02-04 18:51:00"
+        }
+      ]
     }
   ]
 }

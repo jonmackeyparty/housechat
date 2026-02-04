@@ -460,8 +460,14 @@ def handle_disconnect():
 @app.route('/create_channel', methods=['POST'])
 def create_channel():
     channels = load_channels()
-    name = request.form.get('name')
-    if name and name not in channels:
+    name = (request.form.get('name') or '').strip()
+    if not name:
+        return redirect(url_for('index'))
+    # ensure channel names start with '#'
+    if not name.startswith('#'):
+        name = '#' + name
+    # avoid duplicate when equivalent name exists
+    if name not in channels:
         channels[name] = []
         save_channels(channels)
     return redirect(url_for('channel_view', channel=name))
