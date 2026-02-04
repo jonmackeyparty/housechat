@@ -1,0 +1,39 @@
+{
+  "#germantown": [
+    {
+      "user": "Big J",
+      "message": "Hello, chatting here",
+      "timestamp": "2026-02-02 17:52:56"
+    }
+  ],
+  "#good-posts": [],
+  "#food-and-drank": [],
+  "#feature-requests": [],
+  "#music-notes": [
+    {
+      "user": "Big J",
+      "message": "https://open.spotify.com/album/7uU2qrFZQSdQacicLXMnaJ",
+      "timestamp": "2026-02-02 18:03:56",
+      "replies": [
+        {
+          "user": "Big J",
+          "message": "Scott Walker IV",
+          "timestamp": "2026-02-02 18:04:26"
+        }
+      ],
+      "reactions": [
+        "\ud83d\udc4d",
+        "\ud83d\udc4d",
+        "\ud83d\udc4d",
+        "\ud83d\ude02",
+        "\ud83d\udc4d",
+        "\ud83d\ude02",
+        "\ud83c\udf89",
+        "\ud83d\ude2e",
+        "\ud83d\udca9"
+      ]
+    }
+  ],
+  "#book-club": [],
+  "mein haus 2.0": []
+}

@@ -197,6 +197,29 @@ def _make_embed_html(text):
                 parts.append(Markup(f"<br><iframe width=\"560\" height=\"315\" src=\"{embed}\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>"))
             else:
                 parts.append(Markup(f'<a href="{escape(url)}" target="_blank" rel="noopener">{escape(url)}</a>'))
+        elif 'open.spotify.com' in lower or lower.startswith('spotify:'):
+            # support spotify URIs (spotify:track:ID) and open.spotify.com links
+            sp_type = None
+            sp_id = None
+            try:
+                if lower.startswith('spotify:'):
+                    parts_sp = url.split(':')
+                    if len(parts_sp) >= 3:
+                        sp_type = parts_sp[1]
+                        sp_id = parts_sp[2]
+                else:
+                    m2 = re.search(r'open\.spotify\.com\/(track|album|playlist)\/([A-Za-z0-9]+)', url)
+                    if m2:
+                        sp_type = m2.group(1)
+                        sp_id = m2.group(2)
+            except Exception:
+                sp_type = None
+                sp_id = None
+            if sp_type and sp_id:
+                embed = f'https://open.spotify.com/embed/{escape(sp_type)}/{escape(sp_id)}'
+                parts.append(Markup(f"<br><iframe src=\"{embed}\" width=\"300\" height=\"80\" frameborder=\"0\" allow=\"encrypted-media\" style=\"border:none;overflow:hidden;\"></iframe>"))
+            else:
+                parts.append(Markup(f'<a href="{escape(url)}" target="_blank" rel="noopener">{escape(url)}</a>'))
         else:
             parts.append(Markup(f'<a href="{escape(url)}" target="_blank" rel="noopener">{escape(url)}</a>'))
         last = end

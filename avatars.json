@@ -64,5 +64,23 @@
     "bg": "#06b6d4",
     "fg": "#ffffff",
     "url": "/static/avatars/a00701470fafa5f3.svg"
+  },
+  "Vaneeza": {
+    "initials": "V",
+    "bg": "#5865f2",
+    "fg": "#ffffff",
+    "url": "/static/avatars/c5b21d9c89bd1716.svg"
+  },
+  "chat checker": {
+    "initials": "CC",
+    "bg": "#f97316",
+    "fg": "#ffffff",
+    "url": "/static/avatars/fb25d2c498482c7c.svg"
+  },
+  "channel bot": {
+    "initials": "CB",
+    "bg": "#ec4899",
+    "fg": "#ffffff",
+    "url": "/static/avatars/7a480e8d425945c9.svg"
   }
 }

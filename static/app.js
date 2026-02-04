@@ -14,9 +14,17 @@
 
     function renderReactions(msg) {
         if (!msg.reactions || msg.reactions.length === 0) return '';
-        return '<div class="reactions" style="margin:6px 0;">' + msg.reactions.map(function(r){
-            return '<span class="emoji-btn" style="background:#ffe4c4; border:none; cursor:default;">'+ r +'</span>';
-        }).join('') + '</div>';
+        // aggregate counts per emoji
+        var counts = {};
+        msg.reactions.forEach(function(r){ counts[r] = (counts[r]||0) + 1; });
+        var parts = [];
+        for (var emoji in counts) {
+            if (!Object.prototype.hasOwnProperty.call(counts, emoji)) continue;
+            var c = counts[emoji];
+            parts.push('<button type="button" class="reaction-chip" data-emoji="' + escapeHtml(emoji) + '" style="background:#fff3e0;border:1px solid #ffd7a8;border-radius:12px;padding:2px 6px;margin-right:6px;cursor:default;">' +
+                '<span class="reaction-emoji">' + escapeHtml(emoji) + '</span> <span class="reaction-count">' + c + '</span></button>');
+        }
+        return '<div class="reactions" style="margin:6px 0;">' + parts.join('') + '</div>';
     }
 
     function renderReplies(msg) {
@@ -129,6 +137,45 @@
         } catch (err) {}
     }, true);
 
+    // optimistic UI: when a reaction submit button is clicked, increment the visible counter
+    document.addEventListener('click', function(ev){
+        try {
+            var t = ev.target;
+            if (!t) return;
+            // button inside a reaction form (server endpoint contains /react/)
+            if (t.matches && t.matches('button.emoji-btn') && t.form && t.form.action && t.form.action.indexOf('/react/') !== -1) {
+                var val = t.value || t.getAttribute('value') || '';
+                // find nearest message container
+                var li = t.closest('.message');
+                if (!li) return;
+                var reactions = li.querySelector('.reactions');
+                if (reactions) {
+                    var chip = reactions.querySelector('.reaction-chip[data-emoji="' + val.replace(/"/g,'\"') + '"]');
+                    if (chip) {
+                        var cnt = chip.querySelector('.reaction-count');
+                        if (cnt) {
+                            try { cnt.textContent = String(Number(cnt.textContent||'0') + 1); } catch (e) {}
+                        }
+                    } else {
+                        // create a new chip
+                        var btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.className = 'reaction-chip';
+                        btn.setAttribute('data-emoji', val);
+                        btn.style.background = '#fff3e0';
+                        btn.style.border = '1px solid #ffd7a8';
+                        btn.style.borderRadius = '12px';
+                        btn.style.padding = '2px 6px';
+                        btn.style.marginRight = '6px';
+                        btn.style.cursor = 'default';
+                        btn.innerHTML = '<span class="reaction-emoji">' + escapeHtml(val) + '</span> <span class="reaction-count">1</span>';
+                        reactions.appendChild(btn);
+                    }
+                }
+            }
+        } catch (err) {}
+    }, false);
+
     document.addEventListener('submit', function(e){
         var form = e.target;
         if (!form || !form.action) return;
@@ -143,6 +190,11 @@
                 }
             } catch (err) {}
             fetch(form.action, { method: 'POST', body: fd, credentials: 'same-origin' }).catch(function(){ /* ignore */ });
+            // clear and refocus the message input so text doesn't remain in the composer
+            try {
+                var mi = form.querySelector('input[name="message"], textarea[name="message"], #message-input');
+                if (mi) { mi.value = ''; try { mi.focus(); } catch (e) {} }
+            } catch (err) {}
             _lastClickedSubmit = null;
             // don't try to scroll immediately; socket handler will scroll when message is appended
             return;
@@ -155,6 +207,14 @@
                 if (_lastClickedSubmit && _lastClickedSubmit.form === form && _lastClickedSubmit.name) {
                     fd2.append(_lastClickedSubmit.name, _lastClickedSubmit.value);
                 }
+            } catch (err) {}
+            // clear any reply input immediately so text doesn't remain after submit
+            try {
+                var ri = form.querySelector('input[name="reply_message"], textarea[name="reply_message"]');
+                if (ri) { ri.value = ''; }
+                // focus main composer if present
+                var main = document.getElementById('message-input') || document.querySelector('input[name="message"], textarea[name="message"]');
+                if (main) try { main.focus(); } catch (e) {}
             } catch (err) {}
             fetch(form.action, { method: 'POST', body: fd2, credentials: 'same-origin' }).then(function(){
                 // extract msg idx from action and scroll to it
@@ -203,6 +263,23 @@
         return id ? 'https://www.youtube.com/embed/' + encodeURIComponent(id) : null;
     }
 
+    function spotifyEmbed(url) {
+        if (!url) return null;
+        // spotify URI: spotify:track:ID or spotify:album:ID or spotify:playlist:ID
+        try {
+            if (url.indexOf('spotify:') === 0) {
+                var parts = url.split(':');
+                if (parts.length >= 3) {
+                    return 'https://open.spotify.com/embed/' + encodeURIComponent(parts[1]) + '/' + encodeURIComponent(parts[2]);
+                }
+            }
+            // open.spotify.com links
+            var m = url.match(/open\.spotify\.com\/(track|album|playlist)\/([A-Za-z0-9]+)/);
+            if (m) return 'https://open.spotify.com/embed/' + encodeURIComponent(m[1]) + '/' + encodeURIComponent(m[2]);
+        } catch (e) {}
+        return null;
+    }
+
     function renderMessageLi(channel, idx, msg) {
         // Build inner .message-text HTML only (used by client when inserting into structured markup)
         var mtext = String(msg.message || '');
@@ -212,9 +289,14 @@
             if (isImageUrl(url)) {
                 mediaPart += '<br><img src="' + escapeHtml(url) + '" alt="image" style="max-width:320px;">';
             } else {
-                var yt = youtubeEmbed(url);
-                if (yt) {
-                    mediaPart += '<br><iframe width="560" height="315" src="' + yt + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+                var sp = spotifyEmbed(url);
+                if (sp) {
+                    mediaPart += '<br><iframe src="' + sp + '" width="300" height="80" frameborder="0" allow="encrypted-media" style="border:none;overflow:hidden;"></iframe>';
+                } else {
+                    var yt = youtubeEmbed(url);
+                    if (yt) {
+                        mediaPart += '<br><iframe width="560" height="315" src="' + yt + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+                    }
                 }
             }
         });
@@ -292,7 +374,8 @@
         var ul = document.querySelector('.messages');
         if (!ul) return;
         var selector = '[data-msg-idx="' + data.msg_idx + '"]';
-        var li = ul.querySelector(selector);
+        var li = ul.querySelector(selector) || document.getElementById('msg-' + data.msg_idx);
+        try { console.debug && console.debug('update_message', data.msg_idx, 'found li?', !!li, 'replies?', data.message && data.message.replies && data.message.replies.length); } catch (e) {}
         if (li) {
             var newReactions = renderReactions(data.message);
             var oldReactions = li.querySelector('.reactions');

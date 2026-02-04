@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 services:
   redis:
     image: redis:7-alpine
@@ -7,16 +7,20 @@ services:
     build: .
     ports:
       - "5000:5000"
-    environment:
-      FLASK_ENV: production
-      SECRET_KEY: "change-me"
-      MESSAGE_QUEUE: "redis://redis:6379/0"
-      CHANNELS_FILE: "/data/channels.json"
-      AVATARS_FILE: "/data/avatars.json"
-      UPLOAD_FOLDER: "/data/uploads"
     depends_on:
       - redis
     volumes:
-      - ./data:/data
+      - ./channels.json:/app/channels.json
+      - ./avatars.json:/app/avatars.json
       - ./static/uploads:/app/static/uploads
+      - ./static/avatars:/app/static/avatars
+    environment:
+      - FLASK_SECRET=change_me
+      - FLASK_ENV=production
+      - SECRET_KEY=change-me
+      - MESSAGE_QUEUE=redis://redis:6379/0
+      - CHANNELS_FILE=/app/channels.json
+      - AVATARS_FILE=/app/avatars.json
+      - UPLOAD_FOLDER=/app/static/uploads
     restart: unless-stopped
+    command: python app.py
